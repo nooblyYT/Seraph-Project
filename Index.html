@@ -23,6 +23,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      background-color: #000;
     }
 
     .hero video {
@@ -154,7 +155,7 @@
 
   <section class="content">
 
-    <div class="site-card" data-main="https://coolmathrizz.netlify.app" data-gate="https://coolmathrizz.netlify.app/gate.html">
+    <div class="site-card" data-gate="https://coolmathrizz.netlify.app/gate.html" data-link="https://coolmathrizz.netlify.app">
       <img src="icon.png" alt="Site thumbnail" onerror="this.src='https://via.placeholder.com/140'" />
       <div class="site-info">
         <div class="site-title">CoolMathRizz<span class="status" id="status1">Checking...</span></div>
@@ -163,7 +164,7 @@
       </div>
     </div>
 
-    <div class="site-card" data-main="https://dadaboonboon.netlify.app" data-gate="https://dadaboonboon.netlify.app/gate.html">
+    <div class="site-card" data-gate="https://dadaboonboon.netlify.app/gate.html" data-link="https://dadaboonboon.netlify.app">
       <img src="icon.png" alt="Site thumbnail" onerror="this.src='https://via.placeholder.com/140'" />
       <div class="site-info">
         <div class="site-title">DaDaBoonBoon<span class="status" id="status2">Checking...</span></div>
@@ -172,7 +173,7 @@
       </div>
     </div>
 
-    <div class="site-card" data-main="https://superseraph123.netlify.app" data-gate="https://superseraph123.netlify.app/gate.html">
+    <div class="site-card" data-gate="https://superseraph123.netlify.app/gate.html" data-link="https://superseraph123.netlify.app">
       <img src="icon.png" alt="Site thumbnail" onerror="this.src='https://via.placeholder.com/140'" />
       <div class="site-info">
         <div class="site-title">Super Seraph<span class="status" id="status3">Checking...</span></div>
@@ -181,7 +182,7 @@
       </div>
     </div>
 
-    <div class="site-card" data-main="https://resonant-medovik-30e17d.netlify.app" data-gate="https://resonant-medovik-30e17d.netlify.app/gate.html">
+    <div class="site-card" data-gate="https://resonant-medovik-30e17d.netlify.app/gate.html" data-link="https://resonant-medovik-30e17d.netlify.app">
       <img src="icon.png" alt="Site thumbnail" onerror="this.src='https://via.placeholder.com/140'" />
       <div class="site-info">
         <div class="site-title">Resonant Medovik<span class="status" id="status4">Checking...</span></div>
@@ -198,23 +199,24 @@
     let i = 0;
     setInterval(() => { title.style.fontFamily = fonts[i % fonts.length]; i++; }, 120);
 
-    async function checkSiteStatus(card, statusId) {
-      const mainUrl = card.dataset.main;
+    function checkStatus(card, statusId) {
+      const statusEl = document.getElementById(statusId);
       const gateUrl = card.dataset.gate;
 
-      try {
-        // Try to fetch the gate specifically (cross-origin HEAD may not work, fallback to img ping)
-        const response = await fetch(gateUrl, { mode: 'no-cors' });
-        document.getElementById(statusId).textContent = 'Operational';
-        document.getElementById(statusId).classList.add('up');
-      } catch {
-        document.getElementById(statusId).textContent = 'Down';
-        document.getElementById(statusId).classList.add('down');
-      }
+      fetch(gateUrl, { method: 'HEAD', mode: 'no-cors' })
+        .then(response => {
+          statusEl.textContent = 'Operational';
+          statusEl.className = 'up';
+        })
+        .catch(error => {
+          statusEl.textContent = 'Down';
+          statusEl.className = 'down';
+        });
     }
 
-    const cards = document.querySelectorAll('.site-card');
-    cards.forEach((card, index) => { checkSiteStatus(card, `status${index+1}`); });
+    document.querySelectorAll('.site-card').forEach((card, index) => {
+      checkStatus(card, `status${index+1}`);
+    });
   </script>
 
 </body>
