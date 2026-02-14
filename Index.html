@@ -34,6 +34,7 @@
       top: 0;
       left: 0;
       z-index: 0;
+      filter: blur(8px) brightness(0.8);
     }
 
     .title-box {
@@ -127,7 +128,7 @@
 </head>
 <body>
 
-  <!-- HERO WITH VIDEO BACKGROUND -->
+  <!-- HERO WITH BLURRED VIDEO BACKGROUND -->
   <section class="hero">
     <video src="background.mp4" autoplay muted loop playsinline></video>
 
@@ -140,7 +141,6 @@
   <!-- SCROLL CONTENT -->
   <section class="content">
 
-    <!-- COPY THIS CARD TO ADD MORE SITES -->
     <div class="site-card">
       <img src="seraph.png" alt="Site thumbnail" />
       <div class="site-info">
@@ -168,7 +168,7 @@
     setInterval(() => {
       title.style.fontFamily = fonts[i % fonts.length];
       i++;
-    }, 120); // split-second change
+    }, 120);
   </script>
 
 </body>
