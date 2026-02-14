@@ -15,7 +15,6 @@
       overflow-x: hidden;
     }
 
-    /* ================= HERO ================= */
     .hero {
       position: relative;
       height: 100vh;
@@ -59,7 +58,6 @@
       opacity: 0.7;
     }
 
-    /* ================= CARDS ================= */
     .content {
       padding: 60px 20px 80px;
       max-width: 1000px;
@@ -71,6 +69,7 @@
 
     .site-card {
       display: flex;
+      flex-direction: row;
       align-items: center;
       gap: 18px;
       border-radius: 14px;
@@ -96,12 +95,23 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      flex: 1;
     }
 
     .site-title {
       font-weight: 600;
       font-size: 1.05rem;
     }
+
+    .status {
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .status.up { color: green; }
+    .status.down { color: red; }
 
     .site-link {
       font-size: 0.8rem;
@@ -112,7 +122,12 @@
 
     .site-link:hover { text-decoration: underline; }
 
-    /* Mobile */
+    .site-description {
+      font-size: 0.85rem;
+      color: #000;
+      margin-top: 4px;
+    }
+
     @media (max-width: 600px) {
       .site-card {
         flex-direction: column;
@@ -128,7 +143,6 @@
 </head>
 <body>
 
-  <!-- HERO WITH BLURRED VIDEO BACKGROUND -->
   <section class="hero">
     <video src="background.mp4" autoplay muted loop playsinline></video>
 
@@ -138,21 +152,48 @@
     </div>
   </section>
 
-  <!-- SCROLL CONTENT -->
   <section class="content">
 
-    <div class="site-card">
+    <div class="site-card" data-base="https://coolmathrizz.netlify.app">
       <img src="seraph.png" alt="Site thumbnail" />
       <div class="site-info">
-        <div class="site-title">Example Site</div>
-        <a class="site-link" href="https://example.com" target="_blank">https://example.com</a>
+        <div class="site-title">CoolMathRizz<span class="status" id="status1">Checking...</span></div>
+        <a class="site-link" href="https://coolmathrizz.netlify.app" target="_blank">https://coolmathrizz.netlify.app</a>
+        <div class="site-description">Some description about CoolMathRizz.</div>
+      </div>
+    </div>
+
+    <div class="site-card" data-base="https://dadaboonboon.netlify.app">
+      <img src="seraph.png" alt="Site thumbnail" />
+      <div class="site-info">
+        <div class="site-title">DaDaBoonBoon<span class="status" id="status2">Checking...</span></div>
+        <a class="site-link" href="https://dadaboonboon.netlify.app" target="_blank">https://dadaboonboon.netlify.app</a>
+        <div class="site-description">Some description about DaDaBoonBoon.</div>
+      </div>
+    </div>
+
+    <div class="site-card" data-base="https://superseraph123.netlify.app">
+      <img src="seraph.png" alt="Site thumbnail" />
+      <div class="site-info">
+        <div class="site-title">Super Seraph<span class="status" id="status3">Checking...</span></div>
+        <a class="site-link" href="https://superseraph123.netlify.app" target="_blank">https://superseraph123.netlify.app</a>
+        <div class="site-description">Some description about Super Seraph.</div>
+      </div>
+    </div>
+
+    <div class="site-card" data-base="https://resonant-medovik-30e17d.netlify.app">
+      <img src="seraph.png" alt="Site thumbnail" />
+      <div class="site-info">
+        <div class="site-title">Resonant Medovik<span class="status" id="status4">Checking...</span></div>
+        <a class="site-link" href="https://resonant-medovik-30e17d.netlify.app" target="_blank">https://resonant-medovik-30e17d.netlify.app</a>
+        <div class="site-description">Some description about Resonant Medovik.</div>
       </div>
     </div>
 
   </section>
 
   <script>
-    // Rapid font switching effect
+    // Font switcher for header
     const fonts = [
       "Arial, sans-serif",
       "Georgia, serif",
@@ -161,14 +202,28 @@
       "Times New Roman, serif",
       "Verdana, sans-serif"
     ];
-
     const title = document.getElementById("title");
     let i = 0;
+    setInterval(() => { title.style.fontFamily = fonts[i % fonts.length]; i++; }, 120);
 
-    setInterval(() => {
-      title.style.fontFamily = fonts[i % fonts.length];
-      i++;
-    }, 120);
+    // Check /gateway.html for each card
+    async function checkGateway(card, statusId) {
+      const base = card.dataset.base;
+      const url = base + '/gateway.html';
+      try {
+        const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+        document.getElementById(statusId).textContent = 'Operational';
+        document.getElementById(statusId).classList.add('up');
+      } catch (err) {
+        document.getElementById(statusId).textContent = 'Down';
+        document.getElementById(statusId).classList.add('down');
+      }
+    }
+
+    const cards = document.querySelectorAll('.site-card');
+    cards.forEach((card, index) => {
+      checkGateway(card, `status${index+1}`);
+    });
   </script>
 
 </body>
