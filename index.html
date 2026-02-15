@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seraph Project Hub</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;background:#fff;color:#111;overflow-x:hidden;}
+.hero{position:relative;height:100vh;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.hero video{position:absolute;width:100%;height:100%;object-fit:cover;top:0;left:0;z-index:0;filter:blur(8px) brightness(0.8);}
+.title-box{position:relative;z-index:2;background:rgba(255,255,255,0.9);backdrop-filter:blur(8px);border-radius:16px;padding:28px 36px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.15);}
+.title-box h1{font-size:clamp(2.5rem,5vw,4rem);margin-bottom:6px;transition:font-family 0.1s linear;}
+.credit{font-size:0.95rem;opacity:0.7;}
+.content{padding:60px 20px 80px;max-width:1000px;margin:auto;display:flex;flex-direction:column;gap:18px;}
+.site-card{display:flex;flex-direction:row;align-items:center;gap:18px;border-radius:14px;border:2px solid #000;background:linear-gradient(180deg,#fff,#f1f1f1);padding:14px;transition:transform 0.15s ease,box-shadow 0.15s ease;}
+.site-card:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,0.12);}
+.site-card img{width:33%;max-width:140px;border-radius:8px;object-fit:cover;}
+.site-info{display:flex;flex-direction:column;gap:6px;flex:1;}
+.site-title{font-weight:600;font-size:1.05rem;}
+.site-link{font-size:0.8rem;color:#1a5cff;text-decoration:none;word-break:break-all;}
+.site-link:hover{text-decoration:underline;}
+.site-description{font-size:0.85rem;color:#000;margin-top:4px;}
+@media(max-width:600px){.site-card{flex-direction:column;align-items:flex-start;}.site-card img{width:100%;max-width:none;}}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <video src="background.mp4" autoplay muted loop playsinline></video>
+  <div class="title-box">
+    <h1 id="title">Seraph Project</h1>
+    <div class="credit">By Yazen a.</div>
+  </div>
+</section>
+
+<section class="content">
+
+  <div class="site-card">
+    <img src="icon.png" alt="Site thumbnail">
+    <div class="site-info">
+      <div class="site-title">CoolMathRizz</div>
+      <a class="site-link" href="https://coolmathrizz.netlify.app" target="_blank">https://coolmathrizz.netlify.app</a>
+      <div class="site-description">Very Rizzy.</div>
+    </div>
+  </div>
+
+  <div class="site-card">
+    <img src="icon.png" alt="Site thumbnail">
+    <div class="site-info">
+      <div class="site-title">Super Seraph</div>
+      <a class="site-link" href="https://superseraph123.netlify.app" target="_blank">https://superseraph123.netlify.app</a>
+      <div class="site-description">The Superest.</div>
+    </div>
+  </div>
+
+  <div class="site-card">
+    <img src="icon.png" alt="Site thumbnail">
+    <div class="site-info">
+      <div class="site-title">DaDaBoonBoon</div>
+      <a class="site-link" href="https://dadaboonboon.netlify.app" target="_blank">https://dadaboonboon.netlify.app</a>
+      <div class="site-description">Goo Goo Gaga.</div>
+    </div>
+  </div>
+
+  <div class="site-card">
+    <img src="icon.png" alt="Site thumbnail">
+    <div class="site-info">
+      <div class="site-title">Resonant Medovik</div>
+      <a class="site-link" href="https://resonant-medovik-30e17d.netlify.app" target="_blank">https://resonant-medovik-30e17d.netlify.app</a>
+      <div class="site-description">The First Seraph.</div>
+    </div>
+  </div>
+
+</section>
+
+<script>
+const fonts=["Arial, sans-serif","Georgia, serif","Courier New, monospace","Trebuchet MS, sans-serif","Times New Roman, serif","Verdana, sans-serif"];
+const title=document.getElementById("title");
+let i=0;
+setInterval(()=>{title.style.fontFamily=fonts[i%fonts.length];i++;},120);
+</script>
+
+</body>
+</html>
