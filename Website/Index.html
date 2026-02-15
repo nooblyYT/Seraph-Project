@@ -18,9 +18,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;ba
 .site-card img{width:33%;max-width:140px;border-radius:8px;object-fit:cover;}
 .site-info{display:flex;flex-direction:column;gap:6px;flex:1;}
 .site-title{font-weight:600;font-size:1.05rem;}
-.status{display:inline-block;font-size:0.85rem;font-weight:600;margin-left:8px;}
-.status.up{color:green;}
-.status.down{color:red;}
 .site-link{font-size:0.8rem;color:#1a5cff;text-decoration:none;word-break:break-all;}
 .site-link:hover{text-decoration:underline;}
 .site-description{font-size:0.85rem;color:#000;margin-top:4px;}
@@ -39,37 +36,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;ba
 
 <section class="content">
 
-  <div class="site-card" data-link="https://coolmathrizz.netlify.app">
+  <div class="site-card">
     <img src="icon.png" alt="Site thumbnail">
     <div class="site-info">
-      <div class="site-title">CoolMathRizz <span class="status">Checking...</span></div>
+      <div class="site-title">CoolMathRizz</div>
       <a class="site-link" href="https://coolmathrizz.netlify.app" target="_blank">https://coolmathrizz.netlify.app</a>
       <div class="site-description">Very Rizzy.</div>
     </div>
   </div>
 
-  <div class="site-card" data-link="https://superseraph123.netlify.app">
+  <div class="site-card">
     <img src="icon.png" alt="Site thumbnail">
     <div class="site-info">
-      <div class="site-title">Super Seraph <span class="status">Checking...</span></div>
+      <div class="site-title">Super Seraph</div>
       <a class="site-link" href="https://superseraph123.netlify.app" target="_blank">https://superseraph123.netlify.app</a>
       <div class="site-description">The Superest.</div>
     </div>
   </div>
 
-  <div class="site-card" data-link="https://dadaboonboon.netlify.app">
+  <div class="site-card">
     <img src="icon.png" alt="Site thumbnail">
     <div class="site-info">
-      <div class="site-title">DaDaBoonBoon <span class="status">Checking...</span></div>
+      <div class="site-title">DaDaBoonBoon</div>
       <a class="site-link" href="https://dadaboonboon.netlify.app" target="_blank">https://dadaboonboon.netlify.app</a>
       <div class="site-description">Goo Goo Gaga.</div>
     </div>
   </div>
 
-  <div class="site-card" data-link="https://resonant-medovik-30e17d.netlify.app">
+  <div class="site-card">
     <img src="icon.png" alt="Site thumbnail">
     <div class="site-info">
-      <div class="site-title">Resonant Medovik <span class="status">Checking...</span></div>
+      <div class="site-title">Resonant Medovik</div>
       <a class="site-link" href="https://resonant-medovik-30e17d.netlify.app" target="_blank">https://resonant-medovik-30e17d.netlify.app</a>
       <div class="site-description">The First Seraph.</div>
     </div>
@@ -78,30 +75,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;ba
 </section>
 
 <script>
-const fonts = ["Arial, sans-serif","Georgia, serif","Courier New, monospace","Trebuchet MS, sans-serif","Times New Roman, serif","Verdana, sans-serif"];
-const title = document.getElementById("title");
-let i = 0;
-setInterval(()=>{ title.style.fontFamily = fonts[i % fonts.length]; i++; }, 120);
-
-async function updateStatus(){
-  const resp = await fetch("/.netlify/functions/ping");
-  const liveSites = await resp.json();
-  document.querySelectorAll(".site-card").forEach(card=>{
-    const siteLink = card.dataset.link;
-    const statusEl = card.querySelector(".status");
-    if(liveSites[siteLink]){
-      statusEl.textContent="Operational";
-      statusEl.className="status up";
-    } else {
-      statusEl.textContent="Down";
-      statusEl.className="status down";
-    }
-  });
-}
-
-// initial check + interval
-updateStatus();
-setInterval(updateStatus,30000);
+const fonts=["Arial, sans-serif","Georgia, serif","Courier New, monospace","Trebuchet MS, sans-serif","Times New Roman, serif","Verdana, sans-serif"];
+const title=document.getElementById("title");
+let i=0;
+setInterval(()=>{title.style.fontFamily=fonts[i%fonts.length];i++;},120);
 </script>
 
 </body>
