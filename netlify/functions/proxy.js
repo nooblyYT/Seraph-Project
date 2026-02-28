@@ -3,13 +3,9 @@ exports.handler = async function(event) {
   if (!target) return { statusCode: 400, body: "Missing url parameter" };
 
   try {
-    const response = await fetch(target, { headers: { "User-Agent": "Mozilla/5.0" } });
-    const contentType = response.headers.get("content-type") || "text/html";
-    let body = await response.text();
-    const base = new URL(target).origin;
-
-    // Fix relative URLs
-    body = body.replace(/(href|src)=["']\/(.*?)["']/g, `$1="${base}/$2"`);
+    const res = await fetch(target, { headers: { "User-Agent": "Mozilla/5.0" } });
+    const body = await res.text();
+    const contentType = res.headers.get("content-type") || "text/html";
 
     return {
       statusCode: 200,
