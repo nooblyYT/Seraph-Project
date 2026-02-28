@@ -5,27 +5,6 @@ const tabsContainer = document.getElementById("tabs");
 let tabs = [];
 let currentTab = null;
 
-// DuckDuckGo homepage
-function createHomePage() {
-  return `
-    <html>
-    <body style="background:#0f0f14;color:white;font-family:sans-serif;text-align:center;padding-top:100px;">
-      <h1>Seraph Browser</h1>
-      <form onsubmit="parent.searchDuckDuckGo(event)">
-        <input style="padding:10px;width:300px;border-radius:8px;border:none;" placeholder="Search DuckDuckGo">
-      </form>
-    </body>
-    </html>
-  `;
-}
-
-function searchDuckDuckGo(e) {
-  e.preventDefault();
-  const input = e.target.querySelector("input").value;
-  loadURL("https://duckduckgo.com/?q=" + encodeURIComponent(input));
-}
-window.searchDuckDuckGo = searchDuckDuckGo;
-
 // Tabs
 function addTab(url = null) {
   const id = Date.now();
@@ -34,21 +13,17 @@ function addTab(url = null) {
   switchTab(id);
   renderTabs();
   if (url) { loadURL(url); }
-  else { frame.srcdoc = createHomePage(); }
 }
-
 function switchTab(id) {
   currentTab = tabs.find(t => t.id === id);
   renderTabs();
 }
-
 function closeTab(id) {
   tabs = tabs.filter(t => t.id !== id);
   if (tabs.length === 0) addTab();
   else switchTab(tabs[0].id);
   renderTabs();
 }
-
 function renderTabs() {
   tabsContainer.innerHTML = "";
   tabs.forEach(tab => {
@@ -62,57 +37,12 @@ function renderTabs() {
 
 // Navigation
 function navigate() {
-  let input = addressBar.value.trim();
-
-  // Special sites that cannot embed
-  const blockedSites = ["wikipedia.org", "tiktok.com", "instagram.com"];
-  for (const site of blockedSites) {
-    if (input.includes(site)) {
-      showExternalNotice(input, `This site cannot be embedded. Open externally.`);
-      return;
-    }
+  let url = addressBar.value.trim();
+  if (!url.startsWith("http")) {
+    if (url.includes(".")) url = "https://" + url;
+    else url = "https://duckduckgo.com/?q=" + encodeURIComponent(url);
   }
-
-  // YouTube embed
-  if (input.includes("youtube.com/watch")) {
-    const id = new URL(input).searchParams.get("v");
-    if (id) { loadYouTubeEmbed(id); return; }
-  }
-
-  // Normal URLs
-  if (!input.startsWith("http")) {
-    if (input.includes(".")) { input = "https://" + input; }
-    else { input = "https://duckduckgo.com/?q=" + encodeURIComponent(input); }
-  }
-
-  loadURL(input);
-}
-
-function loadYouTubeEmbed(videoId) {
-  frame.srcdoc = `<html style="margin:0;background:black">
-    <iframe src="https://www.youtube.com/embed/${videoId}" style="width:100vw;height:100vh;border:none" allowfullscreen></iframe>
-  </html>`;
-}
-
-function showExternalNotice(url, message) {
-  frame.srcdoc = `<div style="
-      font-family:sans-serif;
-      background:#111;
-      color:white;
-      height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      gap:20px">
-    <h2>${message}</h2>
-    <a href="${url}" target="_blank" style="
-      padding:12px 18px;
-      background:white;
-      color:black;
-      border-radius:8px;
-      text-decoration:none;">Open externally</a>
-  </div>`;
+  loadURL(url);
 }
 
 function loadURL(url) {
@@ -122,7 +52,6 @@ function loadURL(url) {
   currentTab.index++;
   frame.src = "/.netlify/functions/proxy?url=" + encodeURIComponent(url);
   addressBar.value = url;
-  saveHistory(url);
 }
 
 function goBack() {
@@ -131,34 +60,23 @@ function goBack() {
     frame.src = "/.netlify/functions/proxy?url=" + encodeURIComponent(currentTab.history[currentTab.index]);
   }
 }
-
 function goForward() {
   if (currentTab.index < currentTab.history.length - 1) {
     currentTab.index++;
     frame.src = "/.netlify/functions/proxy?url=" + encodeURIComponent(currentTab.history[currentTab.index]);
   }
 }
-
 function refresh() { frame.src = frame.src; }
-
 function bookmark() {
   const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "[]");
   bookmarks.push(addressBar.value);
   localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
   alert("Bookmarked!");
 }
-
-function saveHistory(url) {
-  const history = JSON.parse(localStorage.getItem("history") || "[]");
-  history.push(url);
-  localStorage.setItem("history", JSON.stringify(history));
-}
-
 function toggleFullscreen() {
   if (!document.fullscreenElement) document.documentElement.requestFullscreen();
   else document.exitFullscreen();
 }
-
 function panic() { window.location.href = "https://classroom.google.com"; }
 
 // Initialize
