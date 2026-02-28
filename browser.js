@@ -5,6 +5,28 @@ const tabsContainer = document.getElementById("tabs");
 let tabs = [];
 let currentTab = null;
 
+// Create a Seraph-themed local DuckDuckGo homepage
+function createHomePage() {
+  return `
+  <html style="margin:0;background:#0f0f14;color:white;font-family:sans-serif;text-align:center;">
+  <body>
+    <h1 style="padding-top:80px;font-size:3em;">Seraph Browser</h1>
+    <form onsubmit="parent.performSearch(event)">
+      <input style="padding:12px;width:300px;border-radius:8px;border:none;" placeholder="Search DuckDuckGo">
+      <button style="padding:8px 12px;margin-left:8px;border-radius:6px;">Search</button>
+    </form>
+  </body>
+  </html>
+  `;
+}
+
+function performSearch(e) {
+  e.preventDefault();
+  const input = e.target.querySelector("input").value;
+  loadURL("https://duckduckgo.com/?q=" + encodeURIComponent(input));
+}
+window.performSearch = performSearch;
+
 // Tabs
 function addTab(url = null) {
   const id = Date.now();
@@ -12,18 +34,22 @@ function addTab(url = null) {
   tabs.push(tab);
   switchTab(id);
   renderTabs();
-  if (url) { loadURL(url); }
+  if (url) loadURL(url);
+  else frame.srcdoc = createHomePage();
 }
+
 function switchTab(id) {
   currentTab = tabs.find(t => t.id === id);
   renderTabs();
 }
+
 function closeTab(id) {
   tabs = tabs.filter(t => t.id !== id);
   if (tabs.length === 0) addTab();
   else switchTab(tabs[0].id);
   renderTabs();
 }
+
 function renderTabs() {
   tabsContainer.innerHTML = "";
   tabs.forEach(tab => {
@@ -38,10 +64,24 @@ function renderTabs() {
 // Navigation
 function navigate() {
   let url = addressBar.value.trim();
+
+  // Keep YouTube/TikTok loading as before
+  if (url.includes("youtube.com/watch")) {
+    const id = new URL(url).searchParams.get("v");
+    if (id) {
+      frame.srcdoc = `<html style="margin:0;background:black">
+        <iframe src="https://www.youtube.com/embed/${id}" style="width:100vw;height:100vh;border:none" allowfullscreen></iframe>
+      </html>`;
+      return;
+    }
+  }
+
+  // Normal URLs
   if (!url.startsWith("http")) {
     if (url.includes(".")) url = "https://" + url;
     else url = "https://duckduckgo.com/?q=" + encodeURIComponent(url);
   }
+
   loadURL(url);
 }
 
@@ -60,23 +100,28 @@ function goBack() {
     frame.src = "/.netlify/functions/proxy?url=" + encodeURIComponent(currentTab.history[currentTab.index]);
   }
 }
+
 function goForward() {
   if (currentTab.index < currentTab.history.length - 1) {
     currentTab.index++;
     frame.src = "/.netlify/functions/proxy?url=" + encodeURIComponent(currentTab.history[currentTab.index]);
   }
 }
+
 function refresh() { frame.src = frame.src; }
+
 function bookmark() {
   const bookmarks = JSON.parse(localStorage.getItem("bookmarks") || "[]");
   bookmarks.push(addressBar.value);
   localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
   alert("Bookmarked!");
 }
+
 function toggleFullscreen() {
   if (!document.fullscreenElement) document.documentElement.requestFullscreen();
   else document.exitFullscreen();
 }
+
 function panic() { window.location.href = "https://classroom.google.com"; }
 
 // Initialize
