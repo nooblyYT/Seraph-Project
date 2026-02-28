@@ -1,27 +1,19 @@
-export async function handler(event) {
+exports.handler = async function (event) {
   const url = event.queryStringParameters.url;
 
   if (!url) {
-    return {
-      statusCode: 400,
-      body: "Missing URL"
-    };
+    return { statusCode: 400, body: "No URL provided" };
   }
 
   try {
-    const response = await fetch(url, {
+    const res = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0",
-        "Accept": "*/*"
+        "User-Agent": "Mozilla/5.0"
       }
     });
 
-    const contentType = response.headers.get("content-type") || "text/html";
-    let body = await response.text();
-
-    // Basic HTML fixes so assets load better
-    body = body.replace(/href="\//g, `href="${url}/`);
-    body = body.replace(/src="\//g, `src="${url}/`);
+    const contentType = res.headers.get("content-type") || "text/html";
+    let body = await res.text();
 
     return {
       statusCode: 200,
@@ -31,11 +23,10 @@ export async function handler(event) {
       },
       body
     };
-
-  } catch (err) {
+  } catch (e) {
     return {
       statusCode: 500,
-      body: "Proxy failed to load site."
+      body: "Failed to fetch site"
     };
   }
-}
+};
