@@ -1,25 +1,14 @@
-exports.handler = async function (event) {
+exports.handler = async function(event) {
   const target = event.queryStringParameters.url;
-
-  if (!target) {
-    return {
-      statusCode: 400,
-      body: "Missing url parameter"
-    };
-  }
+  if (!target) return { statusCode: 400, body: "Missing url parameter" };
 
   try {
-    const response = await fetch(target, {
-      headers: {
-        "User-Agent": "Mozilla/5.0"
-      }
-    });
-
+    const response = await fetch(target, { headers: { "User-Agent": "Mozilla/5.0" } });
     const contentType = response.headers.get("content-type") || "text/html";
     let body = await response.text();
+    const base = new URL(target).origin;
 
     // Fix relative URLs
-    const base = new URL(target).origin;
     body = body.replace(/(href|src)=["']\/(.*?)["']/g, `$1="${base}/$2"`);
 
     return {
@@ -32,11 +21,7 @@ exports.handler = async function (event) {
       },
       body
     };
-
   } catch (err) {
-    return {
-      statusCode: 500,
-      body: "Proxy error: " + err.message
-    };
+    return { statusCode: 500, body: "Proxy error: " + err.message };
   }
 };
