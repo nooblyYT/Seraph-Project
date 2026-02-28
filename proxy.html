@@ -5,7 +5,6 @@
 <title>Seraph Browser</title>
 <style>
 * { box-sizing: border-box; }
-
 body {
   margin: 0;
   background: #0f0f14;
@@ -15,7 +14,6 @@ body {
   flex-direction: column;
   height: 100vh;
 }
-
 #topbar {
   background: #181825;
   padding: 8px;
@@ -23,7 +21,6 @@ body {
   align-items: center;
   gap: 6px;
 }
-
 button {
   background: #2a2a3a;
   color: white;
@@ -32,11 +29,7 @@ button {
   border-radius: 6px;
   cursor: pointer;
 }
-
-button:hover {
-  background: #3a3a55;
-}
-
+button:hover { background: #3a3a55; }
 #address {
   flex: 1;
   padding: 6px;
@@ -45,7 +38,6 @@ button:hover {
   background: #101018;
   color: white;
 }
-
 #tabs {
   display: flex;
   background: #11111a;
@@ -53,7 +45,6 @@ button:hover {
   gap: 4px;
   overflow-x: auto;
 }
-
 .tab {
   background: #2a2a3a;
   padding: 6px 10px;
@@ -63,22 +54,9 @@ button:hover {
   align-items: center;
   gap: 6px;
 }
-
-.tab.active {
-  background: #44446a;
-}
-
-.close-tab {
-  font-size: 12px;
-  opacity: 0.6;
-}
-
-#browser-frame {
-  flex: 1;
-  border: none;
-  width: 100%;
-}
-
+.tab.active { background: #44446a; }
+.close-tab { font-size: 12px; opacity: 0.6; }
+#browser-frame { flex: 1; border: none; width: 100%; }
 #panic {
   position: fixed;
   bottom: 20px;
@@ -112,6 +90,6 @@ button:hover {
 
 <button id="panic" onclick="panic()">ESC</button>
 
-<script src="proxy.js"></script>
+<script src="browser.js"></script>
 </body>
 </html>
