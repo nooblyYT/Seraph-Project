@@ -18,16 +18,18 @@ exports.handler = async function (event) {
     const contentType = response.headers.get("content-type") || "text/html";
     let body = await response.text();
 
-    // Fix relative links
+    // Fix relative URLs
     const base = new URL(target).origin;
-
     body = body.replace(/(href|src)=["']\/(.*?)["']/g, `$1="${base}/$2"`);
 
     return {
       statusCode: 200,
       headers: {
         "Content-Type": contentType,
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
+        // REMOVE embedding restrictions
+        "X-Frame-Options": "",
+        "Content-Security-Policy": ""
       },
       body
     };
