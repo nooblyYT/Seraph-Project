@@ -64,16 +64,19 @@ function renderTabs() {
 function navigate() {
   let input = addressBar.value.trim();
 
+  // Special sites that cannot embed
+  const blockedSites = ["wikipedia.org", "tiktok.com", "instagram.com"];
+  for (const site of blockedSites) {
+    if (input.includes(site)) {
+      showExternalNotice(input, `This site cannot be embedded. Open externally.`);
+      return;
+    }
+  }
+
   // YouTube embed
   if (input.includes("youtube.com/watch")) {
     const id = new URL(input).searchParams.get("v");
     if (id) { loadYouTubeEmbed(id); return; }
-  }
-
-  // TikTok / Instagram external
-  if (input.includes("tiktok.com") || input.includes("instagram.com")) {
-    showExternalNotice(input, "This site cannot be embedded. Open externally.");
-    return;
   }
 
   // Normal URLs
