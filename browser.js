@@ -5,6 +5,27 @@ const tabsContainer = document.getElementById("tabs");
 let tabs = [];
 let currentTab = null;
 
+// Create a simple Seraph-themed homepage
+function createHomePage() {
+  return `
+  <html style="margin:0;background:#0f0f14;color:white;font-family:sans-serif;text-align:center;">
+  <body>
+    <h1 style="padding-top:80px;font-size:3em;">Welcome to Seraph Browser</h1>
+    <p>Enter a URL in the address bar to begin browsing.</p>
+  </body>
+  </html>`;
+}
+
+// Show “PLEASE ENTER A URL” in the iframe
+function showNoURLMessage() {
+  frame.srcdoc = `
+    <html style="margin:0;background:#0f0f14;color:white;font-family:sans-serif;text-align:center;">
+    <body>
+      <h2 style="padding-top:80px;">PLEASE ENTER A URL</h2>
+    </body>
+    </html>`;
+}
+
 // Tabs
 function addTab(url = null) {
   const id = Date.now();
@@ -13,17 +34,21 @@ function addTab(url = null) {
   switchTab(id);
   renderTabs();
   if (url) loadURL(url);
+  else frame.srcdoc = createHomePage();
 }
+
 function switchTab(id) {
   currentTab = tabs.find(t => t.id === id);
   renderTabs();
 }
+
 function closeTab(id) {
   tabs = tabs.filter(t => t.id !== id);
   if (tabs.length === 0) addTab();
   else switchTab(tabs[0].id);
   renderTabs();
 }
+
 function renderTabs() {
   tabsContainer.innerHTML = "";
   tabs.forEach(tab => {
@@ -38,6 +63,11 @@ function renderTabs() {
 // Navigation
 function navigate() {
   let url = addressBar.value.trim();
+
+  if (!url) {
+    showNoURLMessage();
+    return;
+  }
 
   // YouTube embeds
   if (url.includes("youtube.com/watch")) {
