@@ -13,11 +13,6 @@ function addTab(url = null) {
   switchTab(id);
   renderTabs();
   if (url) loadURL(url);
-  else frame.srcdoc = `<html style="margin:0;background:#0f0f14;color:white;font-family:sans-serif;text-align:center;">
-      <body style="display:flex;justify-content:center;align-items:center;height:100vh;">
-        <h2>New Tab</h2>
-      </body>
-    </html>`;
 }
 
 function switchTab(id) {
