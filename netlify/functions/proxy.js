@@ -1,36 +1,41 @@
 export async function handler(event) {
-  let url = event.queryStringParameters?.url;
-  if (!url) return { statusCode: 400, body: "Missing URL" };
+  const url = event.queryStringParameters.url;
 
-  // Auto protocol
-  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
-
-  const blocked = ["localhost", "127.0.0.1"];
-  if (blocked.some(b => url.includes(b)))
-    return { statusCode: 403, body: "Blocked URL" };
+  if (!url) {
+    return {
+      statusCode: 400,
+      body: "Missing URL"
+    };
+  }
 
   try {
-    const res = await fetch(url, {
+    const response = await fetch(url, {
       headers: {
         "User-Agent": "Mozilla/5.0",
-        "Accept": "text/html"
+        "Accept": "*/*"
       }
     });
 
-    let html = await res.text();
+    const contentType = response.headers.get("content-type") || "text/html";
+    let body = await response.text();
 
-    // Make links behave like a browser
-    html = html.replace(/<head>/i, `<head><base href="${url}">`);
+    // Basic HTML fixes so assets load better
+    body = body.replace(/href="\//g, `href="${url}/`);
+    body = body.replace(/src="\//g, `src="${url}/`);
 
     return {
       statusCode: 200,
       headers: {
-        "Content-Type": "text/html",
-        "Cache-Control": "no-cache"
+        "Content-Type": contentType,
+        "Access-Control-Allow-Origin": "*"
       },
-      body: html
+      body
     };
-  } catch {
-    return { statusCode: 500, body: "Proxy error" };
+
+  } catch (err) {
+    return {
+      statusCode: 500,
+      body: "Proxy failed to load site."
+    };
   }
 }
