@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Seraph Browser</title>
-
 <style>
-body{
+body {
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;
   background:#0f0f0f;
@@ -13,7 +12,7 @@ body{
   overflow:hidden;
 }
 
-/* MATCHES index.html switcher */
+/* Sidebar (matches index.html) */
 .switcher{
   position:fixed;
   left:18px;
@@ -28,7 +27,6 @@ body{
   box-shadow:0 10px 30px rgba(0,0,0,0.2);
   z-index:9999;
 }
-
 .switcher button{
   width:38px;
   height:38px;
@@ -41,7 +39,6 @@ body{
   justify-content:center;
   transition:.15s;
 }
-
 .switcher button:hover{
   background:#f2f2f2;
 }
@@ -53,22 +50,22 @@ body{
   padding:8px 80px 8px 80px;
   background:#151515;
 }
-
 .tab{
   background:#222;
   padding:6px 10px;
   border-radius:8px;
   font-size:13px;
+  cursor:pointer;
 }
+.tab.active{background:#444}
 
-/* Toolbar */
+/* Topbar */
 .topbar{
   display:flex;
   gap:8px;
   padding:8px 80px;
   background:#181818;
 }
-
 .topbar button{
   background:#222;
   border:none;
@@ -77,7 +74,6 @@ body{
   border-radius:6px;
   cursor:pointer;
 }
-
 .url{
   flex:1;
   padding:6px 10px;
@@ -103,7 +99,6 @@ iframe{
   flex-direction:column;
   gap:15px;
 }
-
 .search{
   padding:12px 18px;
   width:400px;
@@ -114,7 +109,7 @@ iframe{
   color:white;
 }
 
-/* Panic */
+/* Panic button */
 .panic{
   position:fixed;
   bottom:20px;
@@ -133,7 +128,7 @@ iframe{
 
 <body>
 
-<!-- MATCHED SWITCHER -->
+<!-- Sidebar -->
 <div class="switcher">
   <button onclick="location.href='index.html'" title="Home">
     <!-- House icon -->
@@ -142,7 +137,6 @@ iframe{
       fill="#111"/>
     </svg>
   </button>
-
   <button title="Browser">
     <!-- Globe icon -->
     <svg width="18" height="18" viewBox="0 0 24 24">
@@ -153,8 +147,10 @@ iframe{
   </button>
 </div>
 
-<div class="tabs" id="tabs"></div>
+<!-- Tabs -->
+<div id="tabs" class="tabs"></div>
 
+<!-- Toolbar -->
 <div class="topbar">
   <button onclick="back()">←</button>
   <button onclick="forward()">→</button>
@@ -163,6 +159,7 @@ iframe{
   <button onclick="load()">Go</button>
 </div>
 
+<!-- Home -->
 <div id="home" class="home">
   <h1>Seraph Browser</h1>
   <input id="homeSearch" class="search" placeholder="Search the web">
@@ -172,40 +169,91 @@ iframe{
 <button class="panic" onclick="escapeNow()">ESCAPE</button>
 
 <script>
-const frame=document.getElementById("frame");
-const home=document.getElementById("home");
-const urlBox=document.getElementById("url");
+const frame = document.getElementById("frame");
+const home = document.getElementById("home");
+const urlBox = document.getElementById("url");
+const tabsEl = document.getElementById("tabs");
+
+let tabs = [];
+let currentTab = -1;
 
 /* Proxy helper */
 function proxy(url){
   return `/.netlify/functions/proxy?url=${encodeURIComponent(url)}`;
 }
 
+/* Tab system */
+function newTab(url=""){
+  tabs.push({url, history:[], index:-1});
+  currentTab = tabs.length-1;
+  renderTabs();
+  if(url) navigate(url);
+}
+
+function renderTabs(){
+  tabsEl.innerHTML = "";
+  tabs.forEach((t,i)=>{
+    const el = document.createElement("div");
+    el.className = "tab"+(i===currentTab?" active":"");
+    el.textContent = t.url ? new URL(t.url).hostname : "New Tab";
+    el.onclick = ()=>switchTab(i);
+    tabsEl.appendChild(el);
+  });
+}
+
+function switchTab(i){
+  currentTab = i;
+  const t = tabs[i];
+  if(t.url){
+    frame.src = proxy(t.url);
+    home.style.display = "none";
+  }
+  renderTabs();
+}
+
+/* Navigation */
+function navigate(url){
+  const t = tabs[currentTab];
+  t.url = url;
+  t.history.push(url);
+  t.index++;
+  frame.src = proxy(url);
+  home.style.display = "none";
+  renderTabs();
+}
+
+/* Load */
 function load(){
-  let val=urlBox.value.trim();
+  let val = urlBox.value.trim();
   if(!val) return;
-  if(!val.startsWith("http")){
-    val="https://duckduckgo.com/?q="+encodeURIComponent(val);
-  }
-  frame.src=proxy(val);
-  home.style.display="none";
+  const looksLikeUrl = val.includes(".") && !val.includes(" ");
+  if(looksLikeUrl && !val.startsWith("http")) val = "https://" + val;
+  if(!val.startsWith("http")) val = "https://duckduckgo.com/?q=" + encodeURIComponent(val);
+  navigate(val);
 }
 
-function back(){ frame.contentWindow.history.back(); }
-function forward(){ frame.contentWindow.history.forward(); }
-function refresh(){ frame.src=frame.src; }
-
-function escapeNow(){
-  location.href="https://classroom.google.com";
+/* Controls */
+function back(){
+  const t = tabs[currentTab];
+  if(t.index>0){ t.index--; frame.src = proxy(t.history[t.index]); }
 }
+function forward(){
+  const t = tabs[currentTab];
+  if(t.index < t.history.length-1){ t.index++; frame.src = proxy(t.history[t.index]); }
+}
+function refresh(){ frame.src = frame.src; }
 
-document.getElementById("homeSearch").addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
-    urlBox.value=e.target.value;
-    load();
-  }
+/* ESCAPE */
+function escapeNow(){ location.href="https://classroom.google.com"; }
+
+/* Home search */
+document.getElementById("homeSearch").addEventListener("keydown", e=>{
+  if(e.key==="Enter"){ urlBox.value=e.target.value; load(); }
 });
-</script>
+urlBox.addEventListener("keydown", e=>{ if(e.key==="Enter") load(); });
 
+/* Init */
+newTab();
+</script>
 </body>
 </html>
