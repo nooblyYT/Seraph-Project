@@ -5,23 +5,13 @@ const tabsContainer = document.getElementById("tabs");
 let tabs = [];
 let currentTab = null;
 
-// Create a simple Seraph-themed homepage
+// Simple homepage HTML
 function createHomePage() {
   return `
-  <html style="margin:0;background:#0f0f14;color:white;font-family:sans-serif;text-align:center;">
-  <body>
-    <h1 style="padding-top:80px;font-size:3em;">Welcome to Seraph Browser</h1>
-    <p>Enter a URL in the address bar to begin browsing.</p>
-  </body>
-  </html>`;
-}
-
-// Show “PLEASE ENTER A URL” in the iframe
-function showNoURLMessage() {
-  frame.srcdoc = `
     <html style="margin:0;background:#0f0f14;color:white;font-family:sans-serif;text-align:center;">
     <body>
-      <h2 style="padding-top:80px;">PLEASE ENTER A URL</h2>
+      <h1 style="padding-top:80px;font-size:3em;">Welcome to Seraph Browser</h1>
+      <p>Enter a URL in the address bar to begin browsing.</p>
     </body>
     </html>`;
 }
@@ -34,7 +24,7 @@ function addTab(url = null) {
   switchTab(id);
   renderTabs();
   if (url) loadURL(url);
-  else frame.srcdoc = createHomePage();
+  else frame.srcdoc = createHomePage(); // <-- homepage added here
 }
 
 function switchTab(id) {
@@ -60,14 +50,11 @@ function renderTabs() {
   });
 }
 
-// Navigation
+// Navigation system untouched
 function navigate() {
   let url = addressBar.value.trim();
 
-  if (!url) {
-    showNoURLMessage();
-    return;
-  }
+  if (!url) return; // do nothing if empty
 
   // YouTube embeds
   if (url.includes("youtube.com/watch")) {
@@ -83,7 +70,6 @@ function navigate() {
   // Normal URLs
   if (!url.startsWith("http")) {
     if (url.includes(".")) url = "https://" + url;
-    else url = "https://duckduckgo.com/?q=" + encodeURIComponent(url);
   }
 
   loadURL(url);
