@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Seraph Proxy</title>
+<style>
+body{font-family:-apple-system,sans-serif;padding:40px;background:#fff;color:#111;}
+input{padding:10px;width:300px;border-radius:8px;border:1px solid #ccc;}
+button{padding:10px 16px;border:none;background:#111;color:#fff;border-radius:8px;cursor:pointer;}
+iframe{margin-top:20px;width:100%;height:70vh;border-radius:12px;border:1px solid #ddd;}
+</style>
+</head>
+<body>
+
+<h1>Seraph Proxy</h1>
+
+<form onsubmit="go(event)">
+  <input id="url" placeholder="https://example.com">
+  <button>Go</button>
+</form>
+
+<iframe id="frame"></iframe>
+
+<script>
+function go(e){
+  e.preventDefault();
+  const url = document.getElementById("url").value;
+  document.getElementById("frame").src =
+    "/.netlify/functions/proxy?url=" + encodeURIComponent(url);
+}
+</script>
+
+</body>
+</html>
