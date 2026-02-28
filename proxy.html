@@ -133,7 +133,6 @@ iframe{
   <button onclick="back()">←</button>
   <button onclick="forward()">→</button>
   <button onclick="refresh()">⟳</button>
-  <button onclick="bookmark()">★</button>
   <input id="url" class="url" placeholder="Search or enter URL">
   <button onclick="load()">Go</button>
 </div>
@@ -177,39 +176,47 @@ function renderTabs(){
   });
 }
 
-/* Switch */
+/* Switch tab */
 function switchTab(i){
   currentTab=i;
   const tab=tabs[i];
   if(tab.url){
     home.style.display="none";
     frame.style.display="block";
-    frame.src=tab.url;
+    frame.src=getProxyUrl(tab.url);
   }
   renderTabs();
 }
 
-/* Load */
+/* Load URL */
 function load(){
   let val=urlBox.value.trim();
   if(!val) return;
+
   if(!val.startsWith("http")){
     val="https://duckduckgo.com/?q="+encodeURIComponent(val);
   }
   navigate(val);
 }
 
-/* Navigate */
+/* Navigate using Netlify proxy */
 function navigate(url){
   const tab=tabs[currentTab];
   tab.url=url;
   tab.history.push(url);
   tab.index++;
-  frame.src=url;
+
+  frame.src=getProxyUrl(url);
+
   home.style.display="none";
   frame.style.display="block";
   renderTabs();
   disguise();
+}
+
+/* Proxy helper */
+function getProxyUrl(url){
+  return `/.netlify/functions/proxy?url=${encodeURIComponent(url)}`;
 }
 
 /* Controls */
@@ -217,24 +224,18 @@ function back(){
   const t=tabs[currentTab];
   if(t.index>0){
     t.index--;
-    frame.src=t.history[t.index];
+    frame.src=getProxyUrl(t.history[t.index]);
   }
 }
 function forward(){
   const t=tabs[currentTab];
   if(t.index<t.history.length-1){
     t.index++;
-    frame.src=t.history[t.index];
+    frame.src=getProxyUrl(t.history[t.index]);
   }
 }
-function refresh(){ frame.src=frame.src; }
-
-/* Bookmark */
-function bookmark(){
-  const bookmarks=JSON.parse(localStorage.getItem("seraphBookmarks")||"[]");
-  bookmarks.push(frame.src);
-  localStorage.setItem("seraphBookmarks",JSON.stringify(bookmarks));
-  alert("Bookmarked!");
+function refresh(){
+  frame.src = frame.src;
 }
 
 /* Panic */
@@ -256,7 +257,7 @@ document.getElementById("homeSearch").addEventListener("keydown",e=>{
   }
 });
 
-/* URL enter */
+/* Enter key support */
 urlBox.addEventListener("keydown",e=>{
   if(e.key==="Enter") load();
 });
