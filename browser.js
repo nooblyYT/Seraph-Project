@@ -5,28 +5,6 @@ const tabsContainer = document.getElementById("tabs");
 let tabs = [];
 let currentTab = null;
 
-// Create a Seraph-themed local DuckDuckGo homepage
-function createHomePage() {
-  return `
-  <html style="margin:0;background:#0f0f14;color:white;font-family:sans-serif;text-align:center;">
-  <body>
-    <h1 style="padding-top:80px;font-size:3em;">Seraph Browser</h1>
-    <form onsubmit="parent.performSearch(event)">
-      <input style="padding:12px;width:300px;border-radius:8px;border:none;" placeholder="Search DuckDuckGo">
-      <button style="padding:8px 12px;margin-left:8px;border-radius:6px;">Search</button>
-    </form>
-  </body>
-  </html>
-  `;
-}
-
-function performSearch(e) {
-  e.preventDefault();
-  const input = e.target.querySelector("input").value;
-  loadURL("https://duckduckgo.com/?q=" + encodeURIComponent(input));
-}
-window.performSearch = performSearch;
-
 // Tabs
 function addTab(url = null) {
   const id = Date.now();
@@ -35,21 +13,17 @@ function addTab(url = null) {
   switchTab(id);
   renderTabs();
   if (url) loadURL(url);
-  else frame.srcdoc = createHomePage();
 }
-
 function switchTab(id) {
   currentTab = tabs.find(t => t.id === id);
   renderTabs();
 }
-
 function closeTab(id) {
   tabs = tabs.filter(t => t.id !== id);
   if (tabs.length === 0) addTab();
   else switchTab(tabs[0].id);
   renderTabs();
 }
-
 function renderTabs() {
   tabsContainer.innerHTML = "";
   tabs.forEach(tab => {
@@ -65,7 +39,7 @@ function renderTabs() {
 function navigate() {
   let url = addressBar.value.trim();
 
-  // Keep YouTube/TikTok loading as before
+  // YouTube embeds
   if (url.includes("youtube.com/watch")) {
     const id = new URL(url).searchParams.get("v");
     if (id) {
