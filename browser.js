@@ -13,6 +13,11 @@ function addTab(url = null) {
   switchTab(id);
   renderTabs();
   if (url) loadURL(url);
+  else frame.srcdoc = `<html style="margin:0;background:#0f0f14;color:white;font-family:sans-serif;text-align:center;">
+      <body style="display:flex;justify-content:center;align-items:center;height:100vh;">
+        <h2>New Tab</h2>
+      </body>
+    </html>`;
 }
 
 function switchTab(id) {
@@ -41,7 +46,6 @@ function renderTabs() {
 // Navigation
 function navigate() {
   let url = addressBar.value.trim();
-
   if (!url) return;
 
   // YouTube embeds
@@ -55,10 +59,17 @@ function navigate() {
     }
   }
 
+  // TikTok embeds
+  if (url.includes("tiktok.com")) {
+    frame.srcdoc = `<html style="margin:0;background:black">
+      <iframe src="${url}" style="width:100vw;height:100vh;border:none" allowfullscreen></iframe>
+    </html>`;
+    return;
+  }
+
   // Normal URLs
   if (!url.startsWith("http")) {
     if (url.includes(".")) url = "https://" + url;
-    else url = "https://duckduckgo.com/?q=" + encodeURIComponent(url);
   }
 
   loadURL(url);
@@ -102,6 +113,12 @@ function toggleFullscreen() {
 }
 
 function panic() { window.location.href = "https://classroom.google.com"; }
+
+// Force new tabs to open inside the proxy iframe
+window.open = function(url) {
+  addTab(url);
+  return null;
+};
 
 // Initialize
 addTab();
