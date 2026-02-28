@@ -7,35 +7,30 @@
 <style>
 body{
   margin:0;
-  font-family:-apple-system,Segoe UI,Inter,sans-serif;
-  background:#fff;color:#111;
-  opacity:0;
-  transition:opacity .3s ease;
+  font-family:system-ui,-apple-system,Segoe UI;
+  background:#0f0f0f;
+  color:white;
+  overflow:hidden;
 }
 
-/* TOP BAR */
-.top{
+/* Sidebar */
+.switcher{
+  position:fixed;
+  left:15px;
+  top:50%;
+  transform:translateY(-50%);
+  background:white;
+  border-radius:50px;
+  padding:10px 6px;
   display:flex;
-  align-items:center;
-  gap:8px;
-  padding:10px;
-  border-bottom:1px solid #ddd;
-  background:#fafafa;
+  flex-direction:column;
+  gap:10px;
+  z-index:9999;
 }
-
-input{
-  flex:1;
-  padding:8px 10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-
-button{
-  padding:6px 10px;
-  border-radius:8px;
+.switcher button{
   border:none;
-  background:#111;
-  color:#fff;
+  background:none;
+  font-size:20px;
   cursor:pointer;
 }
 
@@ -43,231 +38,241 @@ button{
 .tabs{
   display:flex;
   gap:6px;
-  padding:6px;
-  background:#f3f3f3;
-  overflow-x:auto;
+  padding:8px 80px 8px 70px;
+  background:#151515;
 }
 .tab{
-  padding:4px 10px;
-  background:#fff;
+  background:#222;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:13px;
+}
+.tab.active{background:#444}
+
+/* Topbar */
+.topbar{
+  display:flex;
+  gap:8px;
+  padding:8px 80px 8px 70px;
+  background:#181818;
+}
+.topbar button{
+  background:#222;
+  border:none;
+  color:white;
+  padding:6px 10px;
   border-radius:6px;
   cursor:pointer;
-  white-space:nowrap;
 }
-.tab.active{background:#111;color:#fff;}
+.url{
+  flex:1;
+  padding:6px 10px;
+  border-radius:6px;
+  border:none;
+  background:#222;
+  color:white;
+}
 
-/* Frame */
+/* iframe */
 iframe{
   width:100%;
-  height:calc(100vh - 100px);
+  height:calc(100vh - 110px);
   border:none;
 }
 
-/* Left Switcher (same icons) */
-.side-tabs{
-  position:fixed;
-  top:50%;
-  left:20px;
-  transform:translateY(-50%);
-  background:#fff;
-  border-radius:40px;
-  box-shadow:0 8px 25px rgba(0,0,0,0.15);
-  display:flex;
-  flex-direction:column;
-  padding:6px;
-  gap:6px;
-}
-.tab-btn{
-  width:44px;height:44px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  border:none;background:#fff;color:#111;cursor:pointer;
-}
-.tab-btn.active{background:#111;color:#fff;}
-
-/* Seraph homepage */
+/* Home */
 .home{
   display:flex;
-  flex-direction:column;
+  height:calc(100vh - 110px);
   align-items:center;
   justify-content:center;
-  height:calc(100vh - 100px);
-  gap:16px;
+  flex-direction:column;
+  gap:15px;
 }
-.logo{
-  font-size:42px;
-  font-weight:600;
-}
-.quick{
-  display:flex;
-  gap:10px;
-}
-.quick button{
-  background:#eee;color:#111;
+.search{
+  padding:12px 18px;
+  width:400px;
+  max-width:80%;
+  border-radius:50px;
+  border:none;
+  background:#222;
+  color:white;
 }
 
-/* Safe redirect button (customizable) */
-.redirect{
+/* Panic button */
+.panic{
   position:fixed;
   bottom:20px;
   right:20px;
-  background:#ff3b30;
-  color:#fff;
+  width:65px;
+  height:65px;
   border-radius:50%;
-  width:70px;height:70px;
+  background:red;
+  color:white;
+  border:none;
   font-weight:bold;
+  cursor:pointer;
 }
 </style>
 </head>
+
 <body>
 
-<!-- Left Switcher -->
-<div class="side-tabs">
-  <button class="tab-btn" onclick="navigate('/')">
-    <!-- house icon -->
-    <svg viewBox="0 0 24 24" width="20">
-      <path fill="currentColor" d="M12 3l9 8h-3v9h-4v-6H10v6H6v-9H3z"/>
-    </svg>
-  </button>
-  <button class="tab-btn active">
-    <!-- globe icon -->
-    <svg viewBox="0 0 24 24" width="20">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/>
-      <path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"
-            stroke="currentColor" stroke-width="1.6" fill="none"/>
-    </svg>
-  </button>
+<!-- Sidebar -->
+<div class="switcher">
+  <button onclick="goHome()">🏠</button>
+  <button onclick="location.href='proxy.html'">🌐</button>
 </div>
 
-<!-- TOP BAR -->
-<div class="top">
-  <button onclick="goBack()">←</button>
-  <input id="url" placeholder="Search or enter URL">
-  <button onclick="load()">Go</button>
-  <button onclick="newTab()">＋</button>
+<!-- Tabs -->
+<div id="tabs" class="tabs"></div>
+
+<!-- Toolbar -->
+<div class="topbar">
+  <button onclick="back()">←</button>
+  <button onclick="forward()">→</button>
+  <button onclick="refresh()">⟳</button>
   <button onclick="bookmark()">★</button>
-  <button onclick="toggleFullscreen()">⛶</button>
+  <input id="url" class="url" placeholder="Search or enter URL">
+  <button onclick="load()">Go</button>
 </div>
 
-<div class="tabs" id="tabs"></div>
+<!-- Home -->
+<div id="home" class="home">
+  <h1>Seraph Browser</h1>
+  <input id="homeSearch" class="search" placeholder="Search the web">
+</div>
 
-<div id="view"></div>
+<iframe id="frame"></iframe>
 
-<!-- Safe redirect button -->
-<button class="redirect" onclick="location.href='https://example.com'">
-SAFE
-</button>
+<button class="panic" onclick="escapeNow()">ESCAPE</button>
 
 <script>
-window.addEventListener("pageshow",()=>document.body.style.opacity=1);
+const frame = document.getElementById("frame");
+const tabsEl = document.getElementById("tabs");
+const home = document.getElementById("home");
+const urlBox = document.getElementById("url");
 
-const view=document.getElementById("view");
-const tabsUI=document.getElementById("tabs");
-let tabs=[];
-let active=0;
+let tabs = [];
+let currentTab = -1;
 
+/* Create tab */
+function newTab(url=""){
+  tabs.push({url, history:[], index:-1});
+  currentTab = tabs.length-1;
+  renderTabs();
+  if(url) navigate(url);
+}
+
+/* Render tabs */
 function renderTabs(){
-  tabsUI.innerHTML="";
+  tabsEl.innerHTML="";
   tabs.forEach((t,i)=>{
     const el=document.createElement("div");
-    el.className="tab"+(i===active?" active":"");
-    el.textContent=t.title||"New Tab";
+    el.className="tab"+(i===currentTab?" active":"");
+    el.textContent=t.url ? new URL(t.url).hostname : "New Tab";
     el.onclick=()=>switchTab(i);
-    tabsUI.appendChild(el);
+    tabsEl.appendChild(el);
   });
 }
 
+/* Switch */
 function switchTab(i){
-  active=i;
-  showTab();
+  currentTab=i;
+  const tab=tabs[i];
+  if(tab.url){
+    home.style.display="none";
+    frame.style.display="block";
+    frame.src=tab.url;
+  }
+  renderTabs();
 }
 
-function showTab(){
-  const tab=tabs[active];
+/* Load */
+function load(){
+  let val=urlBox.value.trim();
+  if(!val) return;
+  if(!val.startsWith("http")){
+    val="https://duckduckgo.com/?q="+encodeURIComponent(val);
+  }
+  navigate(val);
+}
+
+/* Navigate */
+function navigate(url){
+  const tab=tabs[currentTab];
+  tab.url=url;
+  tab.history.push(url);
+  tab.index++;
+  frame.src=url;
+  home.style.display="none";
+  frame.style.display="block";
   renderTabs();
-  if(tab.home){
-    view.innerHTML=homeHTML;
-  }else{
-    view.innerHTML=`<iframe src="${tab.url}"></iframe>`;
+  disguise();
+}
+
+/* Controls */
+function back(){
+  const t=tabs[currentTab];
+  if(t.index>0){
+    t.index--;
+    frame.src=t.history[t.index];
   }
 }
-
-function newTab(){
-  tabs.push({home:true,title:"Home"});
-  active=tabs.length-1;
-  showTab();
+function forward(){
+  const t=tabs[currentTab];
+  if(t.index<t.history.length-1){
+    t.index++;
+    frame.src=t.history[t.index];
+  }
 }
+function refresh(){ frame.src=frame.src; }
 
-function load(){
-  let url=document.getElementById("url").value.trim();
-  if(!url) return;
-  if(!/^https?:\/\//i.test(url)) url="https://"+url;
-
-  const proxy="/.netlify/functions/proxy?url="+encodeURIComponent(url);
-  tabs[active]={url:proxy,title:url};
-  saveHistory(url);
-  showTab();
-}
-
-function goBack(){
-  const iframe=document.querySelector("iframe");
-  iframe?.contentWindow.history.back();
-}
-
+/* Bookmark */
 function bookmark(){
-  const url=tabs[active].title;
-  let b=JSON.parse(localStorage.getItem("bookmarks")||"[]");
-  b.push(url);
-  localStorage.setItem("bookmarks",JSON.stringify(b));
+  const bookmarks=JSON.parse(localStorage.getItem("seraphBookmarks")||"[]");
+  bookmarks.push(frame.src);
+  localStorage.setItem("seraphBookmarks",JSON.stringify(bookmarks));
   alert("Bookmarked!");
 }
 
-function saveHistory(url){
-  let h=JSON.parse(localStorage.getItem("history")||"[]");
-  h.unshift(url);
-  localStorage.setItem("history",JSON.stringify(h.slice(0,50)));
+/* Panic */
+function escapeNow(){
+  location.href="https://classroom.google.com";
 }
 
-function toggleFullscreen(){
-  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
-  else document.exitFullscreen();
+/* Home */
+function goHome(){
+  home.style.display="flex";
+  frame.style.display="none";
 }
 
-function navigate(u){
-  document.body.style.opacity=0;
-  setTimeout(()=>location.href=u,300);
+/* Home search */
+document.getElementById("homeSearch").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    urlBox.value=e.target.value;
+    load();
+  }
+});
+
+/* URL enter */
+urlBox.addEventListener("keydown",e=>{
+  if(e.key==="Enter") load();
+});
+
+/* Tab disguise */
+function disguise(){
+  document.title="Google Docs";
+  const link=document.createElement("link");
+  link.rel="icon";
+  link.href="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico";
+  document.head.appendChild(link);
 }
 
-/* Seraph homepage */
-const homeHTML=`
-<div class="home">
-  <div class="logo">Seraph</div>
-  <input id="homeSearch" placeholder="Search the web"
-         style="padding:12px;border-radius:10px;border:1px solid #ccc;width:320px;">
-  <div class="quick">
-    <button onclick="quick('https://google.com')">Google</button>
-    <button onclick="quick('https://youtube.com')">YouTube</button>
-    <button onclick="showBookmarks()">Bookmarks</button>
-    <button onclick="showHistory()">History</button>
-  </div>
-</div>
-`;
-
-function quick(u){
-  document.getElementById("url").value=u;
-  load();
-}
-
-function showBookmarks(){
-  const b=JSON.parse(localStorage.getItem("bookmarks")||"[]");
-  alert("Bookmarks:\\n"+b.join("\\n"));
-}
-function showHistory(){
-  const h=JSON.parse(localStorage.getItem("history")||"[]");
-  alert("History:\\n"+h.join("\\n"));
-}
-
-/* Start with home tab */
+/* Init */
 newTab();
 </script>
+
 </body>
 </html>
