@@ -65,6 +65,7 @@ function navigate() {
   // Normal URLs
   if (!url.startsWith("http")) {
     if (url.includes(".")) url = "https://" + url;
+    else url = "https://duckduckgo.com/?q=" + encodeURIComponent(url);
   }
 
   loadURL(url);
@@ -75,7 +76,22 @@ function loadURL(url) {
   currentTab.history = currentTab.history.slice(0, currentTab.index + 1);
   currentTab.history.push(url);
   currentTab.index++;
+
+  // Attempt Netlify function fetch
   frame.src = "/.netlify/functions/proxy?url=" + encodeURIComponent(url);
+
+  // Timeout fallback if site fails
+  setTimeout(() => {
+    const fallback = `
+      <html style="margin:0;background:#0f0f14;color:white;font-family:sans-serif;text-align:center;">
+        <body style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;">
+          <h2>Could not load site via proxy</h2>
+          <p><a href="${url}" target="_blank" style="color:red;">Open in new tab</a></p>
+        </body>
+      </html>`;
+    frame.srcdoc = fallback;
+  }, 7000); // 7 seconds timeout for slow or blocked fetch
+
   addressBar.value = url;
 }
 
@@ -109,7 +125,7 @@ function toggleFullscreen() {
 
 function panic() { window.location.href = "https://classroom.google.com"; }
 
-// Force new tabs to open inside the proxy iframe
+// Force new tabs to open inside proxy
 window.open = function(url) {
   addTab(url);
   return null;
