@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Seraph Browser</title>
+
 <style>
 * { box-sizing: border-box; }
 body {
@@ -18,7 +19,6 @@ body {
   background: #181825;
   padding: 8px;
   display: flex;
-  align-items: center;
   gap: 6px;
 }
 button {
@@ -50,23 +50,17 @@ button:hover { background: #3a3a55; }
   padding: 6px 10px;
   border-radius: 6px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 .tab.active { background: #44446a; }
-.close-tab { font-size: 12px; opacity: 0.6; }
-#browser-frame { flex: 1; border: none; width: 100%; }
-#panic {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: red;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  font-weight: bold;
-  cursor: pointer;
+
+iframe {
+  flex: 1;
+  border: none;
+  width: 100%;
+  display: none;
+}
+iframe.active {
+  display: block;
 }
 </style>
 </head>
@@ -80,16 +74,113 @@ button:hover { background: #3a3a55; }
   <button onclick="goForward()">→</button>
   <button onclick="refresh()">⟳</button>
   <button onclick="addTab()">+</button>
-  <button onclick="bookmark()">★</button>
-  <button onclick="toggleFullscreen()">⛶</button>
-  <input id="address" placeholder="Search or enter URL">
+  <input id="address" placeholder="Enter URL">
   <button onclick="navigate()">Go</button>
 </div>
 
-<iframe id="browser-frame"></iframe>
+<div id="frames"></div>
 
-<button id="panic" onclick="panic()">ESC</button>
+<script>
+/* =========================
+   🔧 CHANGE THIS START URL
+========================= */
+const START_URL = "https://croxyproxy.com"; 
+// Change to: "https://testwebsite123.com" etc.
 
-<script src="browser.js"></script>
+
+let tabs = [];
+let activeTab = null;
+let tabCounter = 0;
+
+const tabsContainer = document.getElementById("tabs");
+const framesContainer = document.getElementById("frames");
+const addressBar = document.getElementById("address");
+
+function createTab(url = START_URL) {
+  const id = tabCounter++;
+
+  // Create tab button
+  const tabBtn = document.createElement("div");
+  tabBtn.className = "tab";
+  tabBtn.textContent = "Tab " + id;
+  tabBtn.onclick = () => switchTab(id);
+
+  tabsContainer.appendChild(tabBtn);
+
+  // Create iframe
+  const iframe = document.createElement("iframe");
+  iframe.sandbox = "allow-scripts allow-same-origin allow-forms allow-popups";
+  iframe.src = url;
+
+  iframe.addEventListener("load", () => {
+    try {
+      // Force window.open into new internal tab
+      iframe.contentWindow.open = function(newUrl) {
+        createTab(newUrl);
+      };
+
+      // Update address bar (only works same-origin)
+      addressBar.value = iframe.contentWindow.location.href;
+    } catch (e) {
+      addressBar.value = iframe.src;
+    }
+  });
+
+  framesContainer.appendChild(iframe);
+
+  tabs.push({ id, tabBtn, iframe });
+  switchTab(id);
+}
+
+function switchTab(id) {
+  tabs.forEach(tab => {
+    tab.tabBtn.classList.remove("active");
+    tab.iframe.classList.remove("active");
+  });
+
+  const tab = tabs.find(t => t.id === id);
+  if (!tab) return;
+
+  tab.tabBtn.classList.add("active");
+  tab.iframe.classList.add("active");
+  activeTab = tab;
+
+  addressBar.value = tab.iframe.src;
+}
+
+function addTab() {
+  createTab();
+}
+
+function navigate() {
+  if (!activeTab) return;
+
+  let url = addressBar.value.trim();
+  if (!url.startsWith("http")) {
+    url = "https://" + url;
+  }
+
+  activeTab.iframe.src = url;
+}
+
+function goBack() {
+  try { activeTab.iframe.contentWindow.history.back(); }
+  catch {}
+}
+
+function goForward() {
+  try { activeTab.iframe.contentWindow.history.forward(); }
+  catch {}
+}
+
+function refresh() {
+  try { activeTab.iframe.contentWindow.location.reload(); }
+  catch {}
+}
+
+// Create first tab
+createTab();
+</script>
+
 </body>
 </html>
