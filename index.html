@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seraph Project Hub</title>
+
+<!-- Always Google Classroom -->
+<title>Google Classroom</title>
 
 <!-- Tab Icon -->
 <link rel="icon" type="image/png" href="icon.png">
@@ -12,11 +14,11 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;background:#fff;color:#111;overflow-x:hidden;}
 
-/* Tab Switcher Button */
+/* Tab Switcher Button (LEFT SIDE) */
 .tab-switcher{
 position:fixed;
 top:15px;
-right:15px;
+left:15px;
 z-index:9999;
 background:#fff;
 border:2px solid #000;
@@ -50,8 +52,8 @@ transform:translateY(-2px);
 </head>
 <body>
 
-<!-- Tab Switch Button -->
-<button class="tab-switcher" onclick="toggleTab()">Switch Tab</button>
+<!-- Left Tab Button -->
+<button class="tab-switcher" onclick="setClassroom()">Set Tab</button>
 
 <section class="hero">
   <video src="background.mp4" autoplay muted loop playsinline></video>
@@ -62,7 +64,7 @@ transform:translateY(-2px);
 </section>
 
 <section class="content">
-
+  <!-- your site cards unchanged -->
   <div class="site-card">
     <img src="icon.png" alt="Site thumbnail">
     <div class="site-info">
@@ -98,7 +100,6 @@ transform:translateY(-2px);
       <div class="site-description">The First Seraph.</div>
     </div>
   </div>
-
 </section>
 
 <script>
@@ -107,17 +108,10 @@ const title=document.getElementById("title");
 let i=0;
 setInterval(()=>{title.style.fontFamily=fonts[i%fonts.length];i++;},120);
 
-/* Tab Switch Logic */
-let switched=false;
-function toggleTab(){
-  if(!switched){
-    document.title="Schoology";
-    document.querySelector("link[rel='icon']").href="icon.png";
-  }else{
-    document.title="Seraph Project Hub";
-    document.querySelector("link[rel='icon']").href="icon.png";
-  }
-  switched=!switched;
+/* Always Google Classroom */
+function setClassroom(){
+  document.title="Google Classroom";
+  document.querySelector("link[rel='icon']").href="icon.png";
 }
 </script>
 
